@@ -1,7 +1,6 @@
-﻿
+﻿/// <author>Thomas Krahl</author>
 
 using System.Diagnostics;
-using System.Web;
 
 namespace Timekeeping
 {
@@ -158,8 +157,8 @@ namespace Timekeeping
                 AddTimeDataToList(newData, true);
             }
 
-            SetTotalTime();
             SetPauseTime();
+            SetTotalTime();
         }
 
         private void SetPauseTime()
@@ -193,9 +192,11 @@ namespace Timekeeping
 
             Debug.WriteLine(DataList[index].endTime + " -- " + DataList[index].startTime);
 
-            TimeSpan duration = GetDuration(DataList[index].endTime, DataList[index].startTime);
+            TimeSpan duration = GetDuration(DataList[index].endTime, DataList[index].startTime);        
             string timeValue = duration.ToString("hh':'mm");
-                
+            duration = GetDuration(timeValue, DataList[index].pauseTime);
+            timeValue = duration.ToString("hh':'mm");
+
             TimeData tempData = DataList[index];
             tempData.totalTime = timeValue;
             DataList[index] = tempData;

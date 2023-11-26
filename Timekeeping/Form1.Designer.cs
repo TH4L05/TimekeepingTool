@@ -84,7 +84,7 @@
             comboBoxYear = new ComboBox();
             comboBoxMonth = new ComboBox();
             groupBox1 = new GroupBox();
-            button3 = new Button();
+            buttonEditEntry = new Button();
             groupBox2 = new GroupBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -94,7 +94,7 @@
             // 
             button1.BackColor = Color.LightGreen;
             button1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            button1.ForeColor = Color.White;
+            button1.ForeColor = SystemColors.ControlText;
             button1.Location = new Point(33, 13);
             button1.Name = "button1";
             button1.Size = new Size(156, 35);
@@ -203,7 +203,7 @@
             comboBoxYear.FlatStyle = FlatStyle.Flat;
             comboBoxYear.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
             comboBoxYear.FormattingEnabled = true;
-            comboBoxYear.Location = new Point(32, 25);
+            comboBoxYear.Location = new Point(32, 35);
             comboBoxYear.Name = "comboBoxYear";
             comboBoxYear.Size = new Size(121, 25);
             comboBoxYear.TabIndex = 4;
@@ -213,7 +213,7 @@
             // 
             comboBoxMonth.FlatStyle = FlatStyle.Flat;
             comboBoxMonth.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            comboBoxMonth.Location = new Point(159, 25);
+            comboBoxMonth.Location = new Point(159, 35);
             comboBoxMonth.Name = "comboBoxMonth";
             comboBoxMonth.Size = new Size(121, 25);
             comboBoxMonth.TabIndex = 5;
@@ -221,7 +221,7 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(button3);
+            groupBox1.Controls.Add(buttonEditEntry);
             groupBox1.Controls.Add(comboBoxMonth);
             groupBox1.Controls.Add(comboBoxYear);
             groupBox1.Controls.Add(listViewMonth);
@@ -233,15 +233,18 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Overview";
             // 
-            // button3
+            // buttonEditEntry
             // 
-            button3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            button3.Location = new Point(401, 25);
-            button3.Name = "button3";
-            button3.Size = new Size(137, 35);
-            button3.TabIndex = 6;
-            button3.Text = "Edit Entry";
-            button3.UseVisualStyleBackColor = true;
+            buttonEditEntry.BackColor = SystemColors.Control;
+            buttonEditEntry.Cursor = Cursors.Hand;
+            buttonEditEntry.Enabled = false;
+            buttonEditEntry.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonEditEntry.Location = new Point(453, 35);
+            buttonEditEntry.Name = "buttonEditEntry";
+            buttonEditEntry.Size = new Size(85, 30);
+            buttonEditEntry.TabIndex = 6;
+            buttonEditEntry.Text = "Edit Entry";
+            buttonEditEntry.UseVisualStyleBackColor = false;
             // 
             // groupBox2
             // 
@@ -263,6 +266,8 @@
             Controls.Add(groupBox1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
+            MaximumSize = new Size(600, 630);
+            MinimumSize = new Size(600, 630);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Timekeeping";
@@ -293,6 +298,6 @@
         private GroupBox groupBox1;
         private GroupBox groupBox2;
         private ColumnHeader columnHeader6;
-        private Button button3;
+        private Button buttonEditEntry;
     }
 }

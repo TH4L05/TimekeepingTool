@@ -1,4 +1,4 @@
-using System.Diagnostics;
+/// <author>Thomas Krahl</author>
 
 namespace Timekeeping
 {

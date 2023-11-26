@@ -1,4 +1,4 @@
-﻿
+﻿/// <author>Thomas Krahl</author>
 
 namespace Timekeeping
 {
