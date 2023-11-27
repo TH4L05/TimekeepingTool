@@ -9,8 +9,11 @@ namespace Timekeeping
         #region Fields
 
         public List<TimeData> DataList {  get; private set; }
+        
         public List<TimeData> DataListMonth { get; private set; }
+        
         public int Month { get; private set; }
+        
         public string CurrentMonth
         {
             get
@@ -18,11 +21,12 @@ namespace Timekeeping
                 return monthNames[Month -1];
             }
         }
+        
         private string FileName
         {
             get
             {
-                return "Data/" + DateTime.Now.Year + "_" + CurrentMonth + ".txt";
+                return $"Data/{ DateTime.Now.Year}_{Month}.txt";
             }
         }
 

@@ -1,5 +1,7 @@
 /// <author>Thomas Krahl</author>
 
+using System.Diagnostics;
+
 namespace Timekeeping
 {
     public partial class Form1 : Form
@@ -36,6 +38,7 @@ namespace Timekeeping
             UpdateListView();
             UpdateListViewMonth();
             setupDone = true;
+            toolStripStatusLabel1.Text = DateTime.Now.ToString("dddd - dd/MM/yyyy");
         }
 
         private void OnTimeStartClick(object sender, EventArgs e)
@@ -64,21 +67,31 @@ namespace Timekeeping
             listViewLastFive.Items.Clear();
             if (timekeeper == null) return;
             List<TimeData> dataList = timekeeper.DataList;
-            if (dataList.Count < 1) return;
+            if (dataList.Count < 1)
+            {
+                ListViewItem newItem = new ListViewItem("no data");
+                listViewLastFive.Items.Add(newItem);
+                return;
+            }
 
             int max = 5;
-
-            if (dataList.Count < max) max = dataList.Count;
-
-            for (int i = 0; i < max; i++)
+            if (dataList.Count < max)
             {
-                int index = dataList.Count - 1 - i;
-                ListViewItem newItem = new ListViewItem(dataList[index].date);
-                newItem.SubItems.Add(dataList[index].weekday);
-                newItem.SubItems.Add(dataList[index].startTime);
-                newItem.SubItems.Add(dataList[index].endTime);
-                newItem.SubItems.Add(dataList[index].pauseTime);
-                newItem.SubItems.Add(dataList[index].totalTime);
+                max = dataList.Count;
+            }
+            else
+            {
+                max -= 1;
+            }
+
+            for (int i = max; i > -1; i--)
+            {
+                ListViewItem newItem = new ListViewItem(dataList[i].date);
+                newItem.SubItems.Add(dataList[i].weekday);
+                newItem.SubItems.Add(dataList[i].startTime);
+                newItem.SubItems.Add(dataList[i].endTime);
+                newItem.SubItems.Add(dataList[i].pauseTime);
+                newItem.SubItems.Add(dataList[i].totalTime);
                 listViewLastFive.Items.Add(newItem);
             }
         }
@@ -95,24 +108,28 @@ namespace Timekeeping
             }
             else
             {
-                dataList = timekeeper.GetTimeDataFromFile($"Data/{comboBoxYear.Text}_{comboBoxMonth.Text}.txt");
+                dataList = timekeeper.GetTimeDataFromFile($"Data/{comboBoxYear.Text}_{1 + comboBoxMonth.SelectedIndex}.txt");
             }
+            SetListViewItems(dataList);
+        }
 
-            if (dataList.Count < 1)
+        private void SetListViewItems(List<TimeData> timeDataList)
+        {
+            if (timeDataList.Count < 1)
             {
                 ListViewItem newItem = new ListViewItem("no data");
                 listViewMonth.Items.Add(newItem);
                 return;
             }
 
-            for (int i = 0; i < dataList.Count; i++)
+            for (int i = 0; i < timeDataList.Count; i++)
             {
-                ListViewItem newItem = new ListViewItem(dataList[i].date);
-                newItem.SubItems.Add(dataList[i].weekday);
-                newItem.SubItems.Add(dataList[i].startTime);
-                newItem.SubItems.Add(dataList[i].endTime);
-                newItem.SubItems.Add(dataList[i].pauseTime);
-                newItem.SubItems.Add(dataList[i].totalTime);
+                ListViewItem newItem = new ListViewItem(timeDataList[i].date);
+                newItem.SubItems.Add(timeDataList[i].weekday);
+                newItem.SubItems.Add(timeDataList[i].startTime);
+                newItem.SubItems.Add(timeDataList[i].endTime);
+                newItem.SubItems.Add(timeDataList[i].pauseTime);
+                newItem.SubItems.Add(timeDataList[i].totalTime);
                 listViewMonth.Items.Add(newItem);
             }
         }
@@ -122,5 +139,33 @@ namespace Timekeeping
             timekeeper?.Save();
             base.OnClosed(e);
         }
+
+        #region MenuItems
+
+        private void OnMenuFileSaveItemClick(object sender, EventArgs e)
+        {
+            timekeeper?.Save();
+        }
+
+        private void OnMenuFileCloseItemClick(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void OnMenuHelpAboutItemClick(object sender, EventArgs e)
+        {
+            panelAbout.Visible = true;
+        }
+
+        #endregion
+
+        #region AboutPanel
+
+        private void OnAboutPanelCloseCLick(object sender, EventArgs e)
+        {
+            panelAbout.Visible = false;
+        }
+
+        #endregion
     }
 }
