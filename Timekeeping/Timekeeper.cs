@@ -4,13 +4,15 @@ using System.Diagnostics;
 
 namespace Timekeeping
 {
-    internal class Timekeeper
+    public class Timekeeper
     {
         #region Fields
 
-        public List<TimeData> DataList {  get; private set; }
-        
-        public List<TimeData> DataListMonth { get; private set; }
+        //public List<TimeData> DataList {  get; private set; }
+
+        public List<TimeData> DataListCurrentMonth { get; private set; }
+
+        public List<TimeData> DataListMonthTemp { get; private set; }
         
         public int Month { get; private set; }
         
@@ -30,52 +32,27 @@ namespace Timekeeping
             }
         }
 
+        private string FileNameTempListMonth;
+
         public string[] monthNames = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 
         #endregion
 
         public Timekeeper()
         {
-            DataList = new List<TimeData>();
-            DataListMonth = new List<TimeData>();
+            DataListCurrentMonth = new List<TimeData>();
+            DataListMonthTemp = new List<TimeData>();
             Month = DateTime.Now.Month;
+            FileNameTempListMonth = FileName;
         }
 
         #region Setup
 
         public void Setup()
         {
-            string[] data = LoadDataFromFile("tempData.txt");
-            SetDataList(data, false);
-
-            data = LoadDataFromFile(FileName);
-            SetDataList(data, true);
-        }
-
-        private void SetDataList(string[] data, bool month)
-        {
-            for (int i = 1; i < data.Length; i++)
-            {
-                string[] line = data[i].Split(';', StringSplitOptions.TrimEntries);
-                TimeData newTimeData = new TimeData()
-                {
-                    date = line[0],
-                    weekday = line[1],
-                    startTime = line[2],
-                    endTime = line[3],
-                    pauseTime = line[4],
-                    totalTime = line[5]
-                };
-
-                if (month)
-                {
-                    DataListMonth.Add(newTimeData);
-                }
-                else
-                {
-                    DataList.Add(newTimeData);
-                }             
-            };                      
+            string[] data = LoadDataFromFile(FileName);
+            DataListCurrentMonth = SetDataList(data);
+            DataListMonthTemp = DataListCurrentMonth;
         }
 
         private TimeData CreateNewTimeData()
@@ -95,6 +72,26 @@ namespace Timekeeping
         #endregion
 
         #region Set
+        private List<TimeData> SetDataList(string[] data)
+        {
+            List<TimeData> dataList = new List<TimeData>();
+            for (int i = 1; i < data.Length; i++)
+            {
+                string[] line = data[i].Split(';', StringSplitOptions.TrimEntries);
+                TimeData newTimeData = new TimeData()
+                {
+                    date = line[0],
+                    weekday = line[1],
+                    startTime = line[2],
+                    endTime = line[3],
+                    pauseTime = line[4],
+                    totalTime = line[5]
+                };
+
+                dataList.Add(newTimeData);    
+            };   
+            return dataList;
+        }
 
         public void SetStartTime()
         {
@@ -103,31 +100,17 @@ namespace Timekeeping
             if (DateAlreadyExists())
             {
                 Debug.WriteLine("Date already exists");
-                //bool overide = true;
-                int index = GetDataListEntryIndexFromDate(false);
-                //if (dataList[index].startTime != "0") overide = OverrideData($"There is already a start time for {dataList[index].date} \n Overwrite time?");
-                //if (!overide) return;
-                TimeData tempData = DataList[index];
+                int index = GetDataListEntryIndexFromDate();
+                TimeData tempData = DataListCurrentMonth[index];
                 tempData.startTime = startTime;
-                DataList[index] = tempData;
-
-                index = GetDataListEntryIndexFromDate(true);
-                tempData = DataListMonth[index];
-                tempData.startTime = startTime;
-                DataListMonth[index] = tempData;
+                DataListCurrentMonth[index] = tempData;
             }
             else
             {
                 Debug.WriteLine("Date not exists -> new Entry");
                 TimeData newData = CreateNewTimeData();
                 newData.startTime = startTime;
-                AddTimeDataToList(newData,true);
-
-                if (DataList.Count > 4)
-                {
-                    DataList.RemoveAt(0);
-                }
-                AddTimeDataToList(newData,false);
+                AddTimeDataToList(newData);
             }
         }
 
@@ -138,18 +121,10 @@ namespace Timekeeping
             if (DateAlreadyExists())
             {
                 Debug.WriteLine("Date already exists");
-                //bool overide = true;
-                int index = GetDataListEntryIndexFromDate(false);
-                //if (dataList[index].startTime != "0") overide = OverrideData($"There is already a end time for {dataList[index].date} \n Overwrite time?");
-                //if (!overide) return;
-                TimeData tempData = DataList[index];
+                int index = GetDataListEntryIndexFromDate();
+                TimeData tempData = DataListCurrentMonth[index];
                 tempData.endTime = endTime;
-                DataList[index] = tempData;
-
-                index = GetDataListEntryIndexFromDate(true);
-                tempData = DataListMonth[index];
-                tempData.endTime = endTime;
-                DataListMonth[index] = tempData;
+                DataListCurrentMonth[index] = tempData;
             }
             else
             {
@@ -157,8 +132,7 @@ namespace Timekeeping
                 TimeData newData = CreateNewTimeData();
                 newData.startTime = endTime;
                 newData.endTime = endTime;
-                AddTimeDataToList(newData, false);
-                AddTimeDataToList(newData, true);
+                AddTimeDataToList(newData);
             }
 
             SetPauseTime();
@@ -167,8 +141,8 @@ namespace Timekeeping
 
         private void SetPauseTime()
         {
-            int index = GetDataListEntryIndexFromDate(false);
-            TimeSpan duration = GetDuration(DataList[index].endTime, DataList[index].startTime);
+            int index = GetDataListEntryIndexFromDate();
+            TimeSpan duration = GetDuration(DataListCurrentMonth[index].endTime, DataListCurrentMonth[index].startTime);
             string timeValue = "00:00";
 
             if (duration.TotalHours > 6 && duration.TotalHours < 9)
@@ -180,47 +154,28 @@ namespace Timekeeping
                 timeValue = "00:45";
             }
         
-            TimeData tempData = DataList[index];
+            TimeData tempData = DataListCurrentMonth[index];
             tempData.pauseTime = timeValue;
-            DataList[index] = tempData;
-
-            index = GetDataListEntryIndexFromDate(true);
-            tempData = DataListMonth[index];
-            tempData.pauseTime = timeValue;
-            DataListMonth[index] = tempData;
+            DataListCurrentMonth[index] = tempData;
         }
 
         private void SetTotalTime()
         {
-            int index = GetDataListEntryIndexFromDate(false);
+            int index = GetDataListEntryIndexFromDate();
 
-            Debug.WriteLine(DataList[index].endTime + " -- " + DataList[index].startTime);
-
-            TimeSpan duration = GetDuration(DataList[index].endTime, DataList[index].startTime);        
+            TimeSpan duration = GetDuration(DataListCurrentMonth[index].endTime, DataListCurrentMonth[index].startTime);        
             string timeValue = duration.ToString("hh':'mm");
-            duration = GetDuration(timeValue, DataList[index].pauseTime);
+            duration = GetDuration(timeValue, DataListCurrentMonth[index].pauseTime);
             timeValue = duration.ToString("hh':'mm");
 
-            TimeData tempData = DataList[index];
+            TimeData tempData = DataListCurrentMonth[index];
             tempData.totalTime = timeValue;
-            DataList[index] = tempData;
-
-            index = GetDataListEntryIndexFromDate(true);
-            tempData = DataListMonth[index];
-            tempData.totalTime = timeValue;
-            DataListMonth[index] = tempData;
+            DataListCurrentMonth[index] = tempData;
         }
-     
-        public void AddTimeDataToList(TimeData timeData, bool month)
+    
+        public void AddTimeDataToList(TimeData timeData)
         {
-            if(month)
-            {
-                DataListMonth.Add(timeData);
-            }
-            else
-            {
-                DataList.Add(timeData);
-            }       
+            DataListCurrentMonth.Add(timeData);           
         }
         
         /*private bool OverrideData(string text)
@@ -237,23 +192,14 @@ namespace Timekeeping
 
         #region Get
 
-        private TimeSpan GetDuration(string time1, string time2)
+        public TimeSpan GetDuration(string time1, string time2)
         {
            return DateTime.Parse(time1).Subtract(DateTime.Parse(time2));
         }
 
-        private int GetDataListEntryIndexFromDate(bool month)
+        private int GetDataListEntryIndexFromDate()
         {
-            List<TimeData> data;
-
-            if(month)
-            {
-                data = DataListMonth;
-            }
-            else
-            {
-                data = DataList;
-            }
+            List<TimeData> data = DataListCurrentMonth;
 
             int index = -1;
             foreach (var timeData in data)
@@ -267,30 +213,32 @@ namespace Timekeeping
             return index;
         }
      
-        public List<TimeData> GetTimeDataFromFile(string path)
+        /*public void GetTimeDataFromFile(string path)
         {
             List<TimeData> timeData = new List<TimeData>();
             string[] data = LoadDataFromFile(path);
 
-            if (data.Length == 0) return timeData;
+            if (data.Length == 0) return;
+            timeData = SetDataList(data);                   
+        }*/
 
-            for (int i = 1; i < data.Length; i++)
+        public void SetTempListMonth(string path)
+        {
+            FileNameTempListMonth = path;
+            string[] data = LoadDataFromFile(path);
+            DataListMonthTemp = SetDataList(data);
+        }
+
+        public TimeData GetTimeDataFromList(int index, bool currentMonth)
+        {
+            if (index == -1) return new TimeData();
+            if (!currentMonth)
             {
-                string[] line = data[i].Split(';', StringSplitOptions.TrimEntries);
-                TimeData newTimeData = new TimeData()
-                {
-                    date = line[0],
-                    weekday = line[1],
-                    startTime = line[2],
-                    endTime = line[3],
-                    pauseTime = line[4],
-                    totalTime = line[5]
-                };
-                
-                 timeData.Add(newTimeData);
-                
-            };
-            return timeData;
+                if (index > DataListMonthTemp.Count) return new TimeData();
+                return DataListMonthTemp[index];
+            }
+            if (index > DataListCurrentMonth.Count) return new TimeData();
+            return DataListCurrentMonth[index];
         }
 
         #endregion
@@ -305,33 +253,23 @@ namespace Timekeeping
 
         public void Save()
         {
-            if (DataList.Count > 0)
+            if (DataListCurrentMonth.Count > 0)
             {
-                string dataString = SetSaveData(false);
-                SaveToFile(dataString, "tempData.txt");
-            }
-
-            if (DataListMonth.Count > 0)
-            {
-                string dataString = SetSaveData(true);
+                string dataString = SetSaveData(DataListCurrentMonth);
                 SaveToFile(dataString, FileName);
-            }           
+            }      
+            
+            if (DataListMonthTemp.Count > 0)
+            {
+                string dataString = SetSaveData(DataListMonthTemp);
+                SaveToFile(dataString, FileNameTempListMonth);
+            }
         }
 
-        private string SetSaveData(bool month)
+        private string SetSaveData(List<TimeData> data)
         {
             string dataString = "Date;Weekday;StartTime;EndTime;PauseTime;TotalTime";
             dataString += "\n";
-
-            List<TimeData> data;
-            if (month)
-            {
-                data = DataListMonth;
-            }
-            else
-            {
-                data = DataList;
-            }
 
             foreach (var timeData in data)
             {
@@ -355,7 +293,7 @@ namespace Timekeeping
 
         private bool DateAlreadyExists()
         {
-            foreach (var timeData in DataList)
+            foreach (var timeData in DataListCurrentMonth)
             {
                 if (timeData.date == DateTime.Today.Date.ToShortDateString())
                 {

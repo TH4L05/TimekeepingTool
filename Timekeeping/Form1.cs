@@ -8,11 +8,13 @@ namespace Timekeeping
     {
         private Timekeeper? timekeeper;
         private bool setupDone = false;
+        private FormEdit form;
 
         public Form1()
         {
             InitializeComponent();
             Setup();
+           
         }
 
         private void Setup()
@@ -59,14 +61,17 @@ namespace Timekeeping
         private void OnComboBoxChanged(object sender, EventArgs e)
         {
             if (!setupDone) return;
+            timekeeper?.SetTempListMonth($"Data/{comboBoxYear.Text}_{1 + comboBoxMonth.SelectedIndex}.txt");
             UpdateListViewMonth();
         }
+
+        #region View
 
         private void UpdateListView()
         {
             listViewLastFive.Items.Clear();
             if (timekeeper == null) return;
-            List<TimeData> dataList = timekeeper.DataList;
+            List<TimeData> dataList = timekeeper.DataListCurrentMonth;
             if (dataList.Count < 1)
             {
                 ListViewItem newItem = new ListViewItem("no data");
@@ -79,19 +84,17 @@ namespace Timekeeping
             {
                 max = dataList.Count;
             }
-            else
-            {
-                max -= 1;
-            }
 
-            for (int i = max; i > -1; i--)
+
+            for (int i = 0; i < max; i++)
             {
-                ListViewItem newItem = new ListViewItem(dataList[i].date);
-                newItem.SubItems.Add(dataList[i].weekday);
-                newItem.SubItems.Add(dataList[i].startTime);
-                newItem.SubItems.Add(dataList[i].endTime);
-                newItem.SubItems.Add(dataList[i].pauseTime);
-                newItem.SubItems.Add(dataList[i].totalTime);
+                int index = dataList.Count - i - 1;
+                ListViewItem newItem = new ListViewItem(dataList[index].date);
+                newItem.SubItems.Add(dataList[index].weekday);
+                newItem.SubItems.Add(dataList[index].startTime);
+                newItem.SubItems.Add(dataList[index].endTime);
+                newItem.SubItems.Add(dataList[index].pauseTime);
+                newItem.SubItems.Add(dataList[index].totalTime);
                 listViewLastFive.Items.Add(newItem);
             }
         }
@@ -104,11 +107,11 @@ namespace Timekeeping
 
             if (1 + comboBoxMonth.SelectedIndex == timekeeper.Month)
             {
-                dataList = timekeeper.DataListMonth;
+                dataList = timekeeper.DataListCurrentMonth;
             }
             else
             {
-                dataList = timekeeper.GetTimeDataFromFile($"Data/{comboBoxYear.Text}_{1 + comboBoxMonth.SelectedIndex}.txt");
+                dataList = timekeeper.DataListMonthTemp;
             }
             SetListViewItems(dataList);
         }
@@ -134,11 +137,7 @@ namespace Timekeeping
             }
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            timekeeper?.Save();
-            base.OnClosed(e);
-        }
+        #endregion
 
         #region MenuItems
 
@@ -167,5 +166,49 @@ namespace Timekeeping
         }
 
         #endregion
+
+        private void OnOverviewListDoubleClick(object sender, EventArgs e)
+        {
+            if (timekeeper == null) return;
+            if (listViewMonth.SelectedItems[0].Text == "no data") return;
+
+            int selectedIndex = -1;
+            if (listViewMonth.SelectedIndices.Count > 0)
+            {
+                selectedIndex = listViewMonth.SelectedIndices[0];
+            }
+
+            List<TimeData> dataList;
+            if (1 + comboBoxMonth.SelectedIndex == timekeeper.Month)
+            {
+                dataList = timekeeper.DataListCurrentMonth;
+            }
+            else
+            {
+                dataList = timekeeper.DataListMonthTemp;
+            }
+            
+
+            form = new FormEdit(dataList[selectedIndex], timekeeper);
+            form.Show();
+            Point location = Location;
+            location.X += Location.X / 4;
+            location.Y += Location.Y / 2;
+            form.Location = location;
+            form.FormClosed += FormEditClosed;
+        }
+        
+        protected override void OnClosed(EventArgs e)
+        {
+            timekeeper?.Save();
+            base.OnClosed(e);
+        }
+
+        private void FormEditClosed(object? sender, FormClosedEventArgs e)
+        {
+            UpdateListView();
+            UpdateListViewMonth();
+            form.FormClosed -= FormEditClosed;
+        }
     }
 }

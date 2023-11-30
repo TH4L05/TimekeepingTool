@@ -75,7 +75,6 @@
             comboBoxYear = new ComboBox();
             comboBoxMonth = new ComboBox();
             groupBox1 = new GroupBox();
-            buttonEditEntry = new Button();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
@@ -117,6 +116,7 @@
             listViewMonth.TabIndex = 3;
             listViewMonth.UseCompatibleStateImageBehavior = false;
             listViewMonth.View = View.Details;
+            listViewMonth.DoubleClick += OnOverviewListDoubleClick;
             // 
             // columnDate
             // 
@@ -171,7 +171,6 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(buttonEditEntry);
             groupBox1.Controls.Add(comboBoxMonth);
             groupBox1.Controls.Add(comboBoxYear);
             groupBox1.Controls.Add(listViewMonth);
@@ -182,19 +181,6 @@
             groupBox1.TabIndex = 6;
             groupBox1.TabStop = false;
             groupBox1.Text = "Overview";
-            // 
-            // buttonEditEntry
-            // 
-            buttonEditEntry.BackColor = SystemColors.Control;
-            buttonEditEntry.Cursor = Cursors.Hand;
-            buttonEditEntry.Enabled = false;
-            buttonEditEntry.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            buttonEditEntry.Location = new Point(453, 31);
-            buttonEditEntry.Name = "buttonEditEntry";
-            buttonEditEntry.Size = new Size(85, 30);
-            buttonEditEntry.TabIndex = 6;
-            buttonEditEntry.Text = "Edit Entry";
-            buttonEditEntry.UseVisualStyleBackColor = false;
             // 
             // menuStrip1
             // 
@@ -432,7 +418,6 @@
         private ComboBox comboBoxYear;
         private ComboBox comboBoxMonth;
         private GroupBox groupBox1;
-        private Button buttonEditEntry;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
