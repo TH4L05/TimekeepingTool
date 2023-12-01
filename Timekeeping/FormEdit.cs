@@ -7,15 +7,14 @@ namespace Timekeeping
     public partial class FormEdit : Form
     {
         private TimeData timeData;
-        private Timekeeper timekeeper;
+        private readonly Timekeeper timekeeper;
         private bool setupDone;
 
         public FormEdit(TimeData data, Timekeeper timekeeper)
         {
             InitializeComponent();
-            if (timekeeper == null) throw new NullReferenceException("timekeeper reference is missing");
             timeData = data;
-            this.timekeeper = timekeeper;
+            this.timekeeper = timekeeper ?? throw new NullReferenceException("timekeeper reference is missing");
             Setup();
         }
 

@@ -8,7 +8,7 @@ namespace Timekeeping
     {
         private Timekeeper? timekeeper;
         private bool setupDone = false;
-        private FormEdit form;
+        private FormEdit? form;
 
         public Form1()
         {
@@ -209,6 +209,7 @@ namespace Timekeeping
             Debug.Write("FormClosed");
             UpdateListView();
             UpdateListViewMonth();
+            if(form == null) return;
             form.FormClosed -= FormEditClosed;
         }
     }
