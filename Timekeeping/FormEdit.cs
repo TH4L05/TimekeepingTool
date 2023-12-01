@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿/// <author>Thomas Krahl</author>
+
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Timekeeping
 {
@@ -68,17 +60,19 @@ namespace Timekeeping
             int index = -1;
             foreach (var item in timekeeper.DataListMonthTemp)
             {
+                index++;
                 if (item.date == timeData.date)
                 {
                     Debug.WriteLine("Found Date ...");
                     break;
                 }
-                index++;
             }
 
             if (index != -1)
             {
-                timekeeper.DataListMonthTemp[1 + index] = timeData;
+                Debug.WriteLine(index);
+                Debug.WriteLine("SetData");
+                timekeeper.DataListMonthTemp[index] = timeData;
                 timekeeper.Save();
             }           
             Close();
@@ -93,11 +87,12 @@ namespace Timekeeping
 
         private void SetTotalTime()
         {
-            Debug.WriteLine("Set Total Time");
-
             string startTime = textBox1.Text + ":" + textBox2.Text;
             string endTime = textBox4.Text + ":" + textBox3.Text;
             string pauseTime = textBox6.Text + ":" + textBox5.Text;
+
+            if (startTime == "00:00" || endTime == "00:00") return;
+            Debug.WriteLine("Set Total Time");
 
             TimeSpan duration = timekeeper.GetDuration(endTime, startTime);
             string timeValue = duration.ToString("hh':'mm");

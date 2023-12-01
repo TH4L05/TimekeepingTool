@@ -13,8 +13,7 @@ namespace Timekeeping
         public Form1()
         {
             InitializeComponent();
-            Setup();
-           
+            Setup();         
         }
 
         private void Setup()
@@ -48,6 +47,7 @@ namespace Timekeeping
             if (timekeeper == null) return;
             timekeeper.SetStartTime();
             UpdateListView();
+            UpdateListViewMonth();
         }
 
         private void OnTimeEndClick(object sender, EventArgs e)
@@ -206,6 +206,7 @@ namespace Timekeeping
 
         private void FormEditClosed(object? sender, FormClosedEventArgs e)
         {
+            Debug.Write("FormClosed");
             UpdateListView();
             UpdateListViewMonth();
             form.FormClosed -= FormEditClosed;

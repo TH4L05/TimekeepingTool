@@ -61,10 +61,10 @@ namespace Timekeeping
             {
                 date = DateTime.Today.Date.ToShortDateString(),
                 weekday = DateTime.Today.DayOfWeek.ToString(),
-                startTime = 0.ToString(),
-                endTime = 0.ToString(),
-                pauseTime = 0.ToString(),
-                totalTime = 0.ToString()
+                startTime = "00:00",
+                endTime = "00:00",
+                pauseTime = "00:00",
+                totalTime = "00:00",
             };
             return newTimeData;
         }
