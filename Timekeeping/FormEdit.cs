@@ -22,6 +22,7 @@ namespace Timekeeping
         {
             SetTextBoxText();
             setupDone = true;
+            label1.Text = $"Edit Data for {timeData.date}";
         }
 
         private void SetTextBoxText()
@@ -50,11 +51,10 @@ namespace Timekeeping
         {
             if (timeData.date == "") return;
 
-            Debug.WriteLine("SaveData");
-            timeData.startTime = textBox1.Text + ":" + textBox2.Text;
-            timeData.endTime = textBox4.Text + ":" + textBox3.Text;
-            timeData.pauseTime = textBox6.Text + ":" + textBox5.Text;
-            timeData.totalTime = textBox8.Text + ":" + textBox7.Text;
+            timeData.startTime = int.Parse(textBox1.Text).ToString("00") + ":" + int.Parse(textBox2.Text).ToString("00");
+            timeData.endTime = int.Parse(textBox4.Text).ToString("00") + ":" + int.Parse(textBox3.Text).ToString("00");
+            timeData.pauseTime = int.Parse(textBox6.Text).ToString("00") + ":" + int.Parse(textBox5.Text).ToString("00");
+            timeData.totalTime = int.Parse(textBox8.Text).ToString("00") + ":" + int.Parse(textBox7.Text).ToString("00");
 
             int index = -1;
             foreach (var item in timekeeper.DataListMonthTemp)
@@ -69,10 +69,9 @@ namespace Timekeeping
 
             if (index != -1)
             {
-                Debug.WriteLine(index);
                 Debug.WriteLine("SetData");
                 timekeeper.DataListMonthTemp[index] = timeData;
-                timekeeper.Save();
+                timekeeper.Save();             
             }           
             Close();
         }
@@ -95,12 +94,9 @@ namespace Timekeeping
 
             TimeSpan duration = timekeeper.GetDuration(endTime, startTime);
             string timeValue = duration.ToString("hh':'mm");
-            Debug.WriteLine(timeValue);
 
             duration = timekeeper.GetDuration(timeValue, pauseTime);
             timeValue = duration.ToString("hh':'mm");
-            Debug.WriteLine(timeValue);
-
             string[] total = timeValue.Split(':');
 
             textBox8.Text = total[0];
