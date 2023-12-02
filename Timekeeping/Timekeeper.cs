@@ -253,6 +253,7 @@ namespace Timekeeping
 
         public void Save()
         {
+            Debug.WriteLine("SaveData");
             if (DataListCurrentMonth.Count > 0)
             {
                 string dataString = SetSaveData(DataListCurrentMonth);

@@ -81,7 +81,9 @@
             // 
             // textBox1
             // 
+            textBox1.ImeMode = ImeMode.NoControl;
             textBox1.Location = new Point(111, 58);
+            textBox1.MaxLength = 2;
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(25, 23);
             textBox1.TabIndex = 0;
@@ -142,6 +144,7 @@
             // textBox2
             // 
             textBox2.Location = new Point(152, 58);
+            textBox2.MaxLength = 2;
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(25, 23);
             textBox2.TabIndex = 9;
@@ -151,6 +154,7 @@
             // textBox3
             // 
             textBox3.Location = new Point(152, 88);
+            textBox3.MaxLength = 2;
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(25, 23);
             textBox3.TabIndex = 12;
@@ -170,6 +174,7 @@
             // textBox4
             // 
             textBox4.Location = new Point(111, 88);
+            textBox4.MaxLength = 2;
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(25, 23);
             textBox4.TabIndex = 10;
@@ -180,6 +185,7 @@
             // textBox5
             // 
             textBox5.Location = new Point(152, 117);
+            textBox5.MaxLength = 2;
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(25, 23);
             textBox5.TabIndex = 15;
@@ -199,6 +205,7 @@
             // textBox6
             // 
             textBox6.Location = new Point(111, 117);
+            textBox6.MaxLength = 2;
             textBox6.Name = "textBox6";
             textBox6.Size = new Size(25, 23);
             textBox6.TabIndex = 13;
@@ -210,6 +217,7 @@
             // 
             textBox7.Enabled = false;
             textBox7.Location = new Point(152, 146);
+            textBox7.MaxLength = 2;
             textBox7.Name = "textBox7";
             textBox7.Size = new Size(25, 23);
             textBox7.TabIndex = 18;
@@ -229,6 +237,7 @@
             // 
             textBox8.Enabled = false;
             textBox8.Location = new Point(111, 146);
+            textBox8.MaxLength = 2;
             textBox8.Name = "textBox8";
             textBox8.Size = new Size(25, 23);
             textBox8.TabIndex = 16;
@@ -259,7 +268,11 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(textBox1);
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "FormEdit";
+            ShowIcon = false;
+            ShowInTaskbar = false;
             Text = "EditData";
             ResumeLayout(false);
             PerformLayout();
